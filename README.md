@@ -38,7 +38,7 @@ Timer::clear();
 
 Check if a timer exists.
 
-- `$name` is the timer name.
+- `$name` is a string representing the timer name.
 
 ```php
 $exists = Timer::exists($name);
@@ -48,7 +48,7 @@ $exists = Timer::exists($name);
 
 Get the elapsed time for a timer.
 
-- `$name` is the timer name.
+- `$name` is a string representing the timer name.
 
 ```php
 $elapsed = Timer::getElapsed($name);
@@ -70,7 +70,7 @@ This method will automatically stop all timers if they have not already been sto
 
 Start a timer.
 
-- `$name` is the timer name.
+- `$name` is a string representing the timer name.
 
 ```php
 Timer::start($name);
@@ -80,7 +80,7 @@ Timer::start($name);
 
 Stop a timer.
 
-- `$name` is the timer name.
+- `$name` is a string representing the timer name.
 
 ```php
 Timer::stop($name);
