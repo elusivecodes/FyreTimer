@@ -96,7 +96,7 @@ class Timer
     /**
      * Stop a timer.
      * @param string $name The timer name.
-     * @throws RunTimeException
+     * @throws RunTimeException if the timer is invalid.
      */
     public static function stop(string $name): void
     {
