@@ -20,7 +20,7 @@ composer install fyre/timer
 In PHP:
 
 ```php
-use Fyre\Timer;
+use Fyre\Utility\Timer;
 ```
 
 

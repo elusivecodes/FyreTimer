@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use
-    Fyre\Timer,
+    Fyre\Utility\Timer,
     PHPUnit\Framework\TestCase,
     RunTimeException;
 
