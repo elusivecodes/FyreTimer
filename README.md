@@ -14,7 +14,7 @@
 **Using Composer**
 
 ```
-composer install fyre/timer
+composer require fyre/timer
 ```
 
 In PHP:
