@@ -14,7 +14,7 @@ use function
 final class TimerTest extends TestCase
 {
 
-    public function testTimerStartStop(): void
+    public function testStartStop(): void
     {
         Timer::start('test');
         usleep(500000);
@@ -31,7 +31,7 @@ final class TimerTest extends TestCase
         $this->assertGreaterThan(.5, $timers['test']['duration']);
     }
 
-    public function testTimerStartStopConcurrent(): void
+    public function testStartStopConcurrent(): void
     {
         Timer::start('test1');
         usleep(500000);
@@ -47,7 +47,7 @@ final class TimerTest extends TestCase
         $this->assertGreaterThan(.5, $timers['test2']['duration']);
     }
 
-    public function testTimerStartAutoStop(): void
+    public function testStartAutoStop(): void
     {
         Timer::start('test');
         usleep(500000);
@@ -58,14 +58,14 @@ final class TimerTest extends TestCase
         $this->assertGreaterThan(.5, $timers['test']['duration']);
     }
 
-    public function testTimerStopNotStarted(): void
+    public function testStopNotStarted(): void
     {
         $this->expectException(RunTimeException::class);
 
         Timer::stop('test');
     }
 
-    public function testTimerGetElapsed(): void
+    public function testGetElapsed(): void
     {
         Timer::start('test');
         usleep(500000);
@@ -75,14 +75,14 @@ final class TimerTest extends TestCase
         $this->assertEquals($timers['test']['duration'], Timer::getElapsed('test'));
     }
 
-    public function testTimerGetElapsedNotStarted(): void
+    public function testGetElapsedNotStarted(): void
     {
         $this->assertNull(
             Timer::getElapsed('test')
         );
     }
 
-    public function testTimerStartAlreadyStarted(): void
+    public function testStartAlreadyStarted(): void
     {
         Timer::start('test');
         usleep(500000);
@@ -91,7 +91,7 @@ final class TimerTest extends TestCase
         $this->assertGreaterThan(.5, Timer::getElapsed('test'));
     }
 
-    public function testTimerExistsTrue(): void
+    public function testExistsTrue(): void
     {
         Timer::start('test');
 
@@ -100,7 +100,7 @@ final class TimerTest extends TestCase
         );
     }
 
-    public function testTimerExistsFalse(): void
+    public function testExistsFalse(): void
     {
         $this->assertFalse(
             Timer::exists('test')
