@@ -26,9 +26,12 @@ final class TimerTest extends TestCase
         $this->assertArrayHasKey('test', $timers);
         $this->assertArrayHasKey('start', $timers['test']);
         $this->assertArrayHasKey('end', $timers['test']);
-
         $this->assertArrayHasKey('duration', $timers['test']);
-        $this->assertGreaterThan(.5, $timers['test']['duration']);
+
+        $this->assertGreaterThan(
+            .5,
+            $timers['test']['duration']
+        );
     }
 
     public function testStartStopConcurrent(): void
@@ -43,8 +46,16 @@ final class TimerTest extends TestCase
         $timers = Timer::getTimers();
 
         $this->assertCount(2, $timers);
-        $this->assertGreaterThan(1, $timers['test1']['duration']);
-        $this->assertGreaterThan(.5, $timers['test2']['duration']);
+
+        $this->assertGreaterThan(
+            1,
+            $timers['test1']['duration']
+        );
+
+        $this->assertGreaterThan(
+            .5,
+            $timers['test2']['duration']
+        );
     }
 
     public function testStartAutoStop(): void
@@ -55,7 +66,11 @@ final class TimerTest extends TestCase
         $timers = Timer::getTimers();
 
         $this->assertArrayHasKey('duration', $timers['test']);
-        $this->assertGreaterThan(.5, $timers['test']['duration']);
+
+        $this->assertGreaterThan(
+            .5,
+            $timers['test']['duration']
+        );
     }
 
     public function testStopNotStarted(): void
@@ -72,7 +87,10 @@ final class TimerTest extends TestCase
 
         $timers = Timer::getTimers();
 
-        $this->assertEquals($timers['test']['duration'], Timer::getElapsed('test'));
+        $this->assertSame(
+            $timers['test']['duration'],
+            Timer::getElapsed('test')
+        );
     }
 
     public function testGetElapsedNotStarted(): void
@@ -88,7 +106,10 @@ final class TimerTest extends TestCase
         usleep(500000);
         Timer::start('test');
 
-        $this->assertGreaterThan(.5, Timer::getElapsed('test'));
+        $this->assertGreaterThan(
+            .5,
+            Timer::getElapsed('test')
+        );
     }
 
     public function testExistsTrue(): void
