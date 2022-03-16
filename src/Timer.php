@@ -71,7 +71,7 @@ class Timer
         }
 
         return array_map(
-            function($timer) {
+            function(array $timer): array {
                 $timer['duration'] = $timer['end'] - $timer['start'];
                 return $timer;
             },
