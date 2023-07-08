@@ -26,6 +26,14 @@ use Fyre\Utility\Timer;
 
 ## Methods
 
+**All**
+
+Get all timers.
+
+```php
+$timers = Timer::all();
+```
+
 **Clear**
 
 Clear all timers.
@@ -34,37 +42,63 @@ Clear all timers.
 Timer::clear();
 ```
 
-**Exists**
+**Count**
 
-Check if a timer exists.
+Get the number of timers.
+
+```php
+$timerCount = Timer::count();
+```
+
+**Delete**
+
+Delete a timer.
 
 - `$name` is a string representing the timer name.
 
 ```php
-$exists = Timer::exists($name);
+$deleted = Timer::delete($name);
 ```
 
-**Get Elapsed**
+**Elapsed**
 
 Get the elapsed time for a timer.
 
 - `$name` is a string representing the timer name.
 
 ```php
-$elapsed = Timer::getElapsed($name);
+$elapsed = Timer::elapsed($name);
 ```
 
-This method will automatically stop the timer if it has not already been stopped.
+**Get**
 
-**Get Timers**
+Get a timer.
 
-Get all timers.
+- `$name` is a string representing the timer name.
 
 ```php
-$timers = Timer::getTimers();
+$timer = Timer::get($name);
 ```
 
-This method will automatically stop all timers if they have not already been stopped.
+**Has**
+
+Check if a timer exists.
+
+- `$name` is a string representing the timer name.
+
+```php
+$hasTimer = Timer::has($name);
+```
+
+**Is Stopped**
+
+Determine whether a timer is stopped.
+
+- `$name` is a string representing the timer name.
+
+```php
+$isStopped = Timer::isStopped($name);
+```
 
 **Start**
 
@@ -84,4 +118,12 @@ Stop a timer.
 
 ```php
 Timer::stop($name);
+```
+
+**Stop All**
+
+Stop all timers.
+
+```php
+Timer::stopAll();
 ```

@@ -3,14 +3,11 @@ declare(strict_types=1);
 
 namespace Fyre\Utility;
 
-use
-    RunTimeException;
+use Fyre\Utility\Exceptions\TimerException;
 
-use function
-    array_key_exists,
-    array_map,
-    microtime,
-    strtolower;
+use function array_key_exists;
+use function count;
+use function hrtime;
 
 /**
  * Timer
@@ -21,6 +18,15 @@ class Timer
     protected static array $timers = [];
 
     /**
+     * Get all timers.
+     * @return array The timers.
+     */
+    public static function all(): array
+    {
+        return static::$timers;
+    }
+
+    /**
      * Clear all timers.
      */
     public static function clear(): void
@@ -29,54 +35,76 @@ class Timer
     }
 
     /**
-     * Check if a timer exists.
-     * @param string $name The timer name.
-     * @return bool TRUE if the timer exists, otherwise FALSE.
+     * Get the number of timers.
+     * @return int The number of timers.
      */
-    public static function exists(string $name): bool
+    public static function count(): int
     {
-        $name = static::formatKey($name);
-
-        return array_key_exists($name, static::$timers);
+        return count(static::$timers);
     }
 
     /**
      * Get the elapsed time for a timer.
      * @param string $name The timer name.
-     * @return float|null The elapsed time.
+     * @return float The elapsed time.
      */
-    public static function getElapsed(string $name): float|null
+    public static function elapsed(string $name): float
     {
-        $name = static::formatKey($name);
-
-		if (!array_key_exists($name, static::$timers)) {
-			return null;
+		if (!static::has($name)) {
+            throw TimerException::forInvalidTimer($name);
 		}
 
-        static::$timers[$name]['end'] ??= static::now();
-
-        $timer = static::$timers[$name];
-
-        return $timer['end'] - $timer['start'];
+        return hrtime(true) - static::$timers[$name]['start'];
     }
 
     /**
-     * Get all timers.
-     * @return array The timers.
+     * Get a timer.
+     * @param string $name The timer name.
+     * @return array|null The timer data.
      */
-    public static function getTimers(): array
+    public static function get(string $name): array|null
     {
-        foreach (static::$timers AS &$timer) {
-            $timer['end'] ??= static::now();
+        return static::$timers[$name] ?? null;
+    }
+
+    /**
+     * Determine whether a timer exists.
+     * @param string $name The timer name.
+     * @return bool TRUE if the timer exists, otherwise FALSE.
+     */
+    public static function has(string $name): bool
+    {
+        return array_key_exists($name, static::$timers);
+    }
+
+    /**
+     * Determine whether a timer is stopped.
+     * @param string $name The timer name.
+     * @return bool TRUE if the timer is stopped, otherwise FALSE.
+     */
+    public static function isStopped(string $name): bool
+    {
+		if (!static::has($name)) {
+            throw TimerException::forInvalidTimer($name);
         }
 
-        return array_map(
-            function(array $timer): array {
-                $timer['duration'] = $timer['end'] - $timer['start'];
-                return $timer;
-            },
-            static::$timers
-        );
+        return static::$timers[$name]['end'] !== null;
+    }
+
+    /**
+     * Delete a timer.
+     * @param string $name The timer name.
+     * @return bool TRUE if the timer was deleted, otherwise FALSE.
+     */
+    public static function delete(string $name): bool
+    {
+		if (!static::has($name)) {
+            return false;
+        }
+
+        unset(static::$timers[$name]);
+
+        return true;
     }
 
     /**
@@ -85,47 +113,50 @@ class Timer
      */
     public static function start(string $name): void
     {
-        $name = static::formatKey($name);
+		if (static::has($name)) {
+            throw TimerException::forTimerAlreadyStarted($name);
+        }
 
-        static::$timers[$name] ??= [
-            'start' => static::now(),
-            'end' => null
+        static::$timers[$name] = [
+            'start' => hrtime(true) / 1000,
+            'end' => null,
+            'duration' => null
         ];
     }
 
     /**
      * Stop a timer.
      * @param string $name The timer name.
-     * @throws RunTimeException if the timer is invalid.
      */
     public static function stop(string $name): void
     {
-        $name = static::formatKey($name);
-
-        if (!array_key_exists($name, static::$timers)) {
-            throw new RunTimeException('Invalid timer: '.$name);
+        if (static::isStopped($name)) {
+            throw TimerException::forTimerAlreadyStopped($name);
         }
 
-		static::$timers[$name]['end'] ??= static::now();
+        $timer = static::$timers[$name];
+
+		$timer['end'] = hrtime(true) / 1000;
+        $timer['duration'] = $timer['end'] - $timer['start'];
+
+        static::$timers[$name] = $timer;
     }
 
     /**
-     * Format a timer key.
-     * @param string $name The timer name.
-     * @return string The timer key.
+     * Stop all timers.
      */
-    protected static function formatKey(string $name): string
+    public static function stopAll(): void
     {
-        return strtolower($name);
-    }
+        foreach (static::$timers AS $name => $timer) {
+            if ($timer['end'] !== null) {
+                continue;
+            }
 
-    /**
-     * Get the current UTC timestamp with microseconds.
-     * @return float The current UTC timestamp with microseconds.
-     */
-    protected static function now(): float
-    {
-        return microtime(true);
+            $timer['end'] = hrtime(true) / 1000;
+            $timer['duration'] = $timer['end'] - $timer['start'];
+
+            static::$timers[$name] = $timer;
+        }
     }
 
 }

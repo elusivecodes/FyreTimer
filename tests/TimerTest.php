@@ -3,129 +3,184 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\Utility\Timer,
-    PHPUnit\Framework\TestCase,
-    RunTimeException;
+use Fyre\Utility\Exceptions\TimerException;
+use Fyre\Utility\Timer;
+use PHPUnit\Framework\TestCase;
 
-use function
-    usleep;
+use function usleep;
 
 final class TimerTest extends TestCase
 {
 
-    public function testStartStop(): void
-    {
-        Timer::start('test');
-        usleep(500000);
-        Timer::stop('test');
-
-        $timers = Timer::getTimers();
-
-        $this->assertCount(1, $timers);
-        $this->assertArrayHasKey('test', $timers);
-        $this->assertArrayHasKey('start', $timers['test']);
-        $this->assertArrayHasKey('end', $timers['test']);
-        $this->assertArrayHasKey('duration', $timers['test']);
-
-        $this->assertGreaterThan(
-            .5,
-            $timers['test']['duration']
-        );
-    }
-
-    public function testStartStopConcurrent(): void
+    public function testCount(): void
     {
         Timer::start('test1');
-        usleep(500000);
         Timer::start('test2');
-        usleep(500000);
-        Timer::stop('test1');
-        Timer::stop('test2');
 
-        $timers = Timer::getTimers();
-
-        $this->assertCount(2, $timers);
-
-        $this->assertGreaterThan(
-            1,
-            $timers['test1']['duration']
-        );
-
-        $this->assertGreaterThan(
-            .5,
-            $timers['test2']['duration']
-        );
+        $this->assertSame(2, Timer::count());
     }
 
-    public function testStartAutoStop(): void
+    public function testDelete(): void
+    {
+        Timer::start('test');
+
+        $this->assertTrue(Timer::delete('test'));
+        $this->assertFalse(Timer::has('test'));
+    }
+
+    public function testDeleteInvalid(): void
+    {
+        $this->assertFalse(Timer::delete('test'));
+    }
+
+    public function testElapsed(): void
     {
         Timer::start('test');
         usleep(500000);
+        $elapsed1 = Timer::elapsed('test');
+        usleep(500000);
+        $elapsed2 = Timer::elapsed('test');
 
-        $timers = Timer::getTimers();
-
-        $this->assertArrayHasKey('duration', $timers['test']);
-
-        $this->assertGreaterThan(
-            .5,
-            $timers['test']['duration']
-        );
+        $this->assertIsFloat($elapsed1);
+        $this->assertIsFloat($elapsed2);
+        $this->assertGreaterThan($elapsed1, $elapsed2);
+        $this->assertFalse(Timer::isStopped('test'));
     }
 
-    public function testStopNotStarted(): void
+    public function testElapsedInvalid(): void
     {
-        $this->expectException(RunTimeException::class);
+        $this->expectException(TimerException::class);
+
+        Timer::elapsed('test');
+    }
+
+    public function testGet(): void
+    {
+        Timer::start('test');
+
+        $timer = Timer::get('test');
+
+        $this->assertArrayHasKey('start', $timer);
+        $this->assertArrayHasKey('end', $timer);
+        $this->assertArrayHasKey('duration', $timer);
+        $this->assertIsFloat($timer['start']);
+        $this->assertNull($timer['end']);
+        $this->assertNull($timer['duration']);
+    }
+
+    public function testGetInvalid(): void
+    {
+        $this->assertNull(Timer::get('test'));
+    }
+
+    public function testHasTrue(): void
+    {
+        Timer::start('test');
+
+        $this->assertTrue(Timer::has('test'));
+    }
+
+    public function testHasFalse(): void
+    {
+        $this->assertFalse(Timer::has('test'));
+    }
+
+    public function testIsStoppedTrue(): void
+    {
+        Timer::start('test');
+        Timer::stop('test');
+
+        $this->assertTrue(Timer::isStopped('test'));
+    }
+
+    public function testIsStoppedFalse(): void
+    {
+        Timer::start('test');
+
+        $this->assertFalse(Timer::isStopped('test'));
+    }
+
+    public function testIsStoppedInvalid(): void
+    {
+        $this->expectException(TimerException::class);
+
+        Timer::isStopped('test');
+    }
+
+    public function testStart(): void
+    {
+        $this->expectNotToPerformAssertions();
+
+        Timer::start('test');
+    }
+
+    public function testStartMultiple(): void
+    {
+        $this->expectException(TimerException::class);
+
+        Timer::start('test');
+        Timer::start('test');
+    }
+
+    public function testStop(): void
+    {
+        Timer::start('test');
+        Timer::stop('test');
+
+        $timer = Timer::get('test');
+
+        $this->assertArrayHasKey('start', $timer);
+        $this->assertArrayHasKey('end', $timer);
+        $this->assertArrayHasKey('duration', $timer);
+        $this->assertIsFloat($timer['start']);
+        $this->assertIsFloat($timer['end']);
+        $this->assertIsFloat($timer['duration']);
+    }
+
+    public function testStopMultiple(): void
+    {
+        $this->expectException(TimerException::class);
+
+        Timer::start('test');
+        Timer::stop('test');
+        Timer::stop('test');
+    }
+
+    public function testStopInvalid(): void
+    {
+        $this->expectException(TimerException::class);
 
         Timer::stop('test');
     }
 
-    public function testGetElapsed(): void
+    public function testStopAll(): void
     {
-        Timer::start('test');
+        Timer::start('test1');
+        Timer::start('test2');
+        Timer::stopAll();
+
+        $timers = Timer::all();
+
+        $this->assertIsArray($timers);
+        $this->assertCount(2, $timers);
+        $this->assertArrayHasKey('test1', $timers);
+        $this->assertArrayHasKey('test2', $timers);
+        $this->assertSame(Timer::get('test1'), $timers['test1']);
+        $this->assertSame(Timer::get('test2'), $timers['test2']);
+    }
+
+    public function testStopAllMultiple(): void
+    {
+        Timer::start('test1');
+        Timer::start('test2');
+        Timer::stopAll();
+
+        $timers = Timer::all();
+
         usleep(500000);
+        Timer::stopAll();
 
-        $timers = Timer::getTimers();
-
-        $this->assertSame(
-            $timers['test']['duration'],
-            Timer::getElapsed('test')
-        );
-    }
-
-    public function testGetElapsedNotStarted(): void
-    {
-        $this->assertNull(
-            Timer::getElapsed('test')
-        );
-    }
-
-    public function testStartAlreadyStarted(): void
-    {
-        Timer::start('test');
-        usleep(500000);
-        Timer::start('test');
-
-        $this->assertGreaterThan(
-            .5,
-            Timer::getElapsed('test')
-        );
-    }
-
-    public function testExistsTrue(): void
-    {
-        Timer::start('test');
-
-        $this->assertTrue(
-            Timer::exists('test')
-        );
-    }
-
-    public function testExistsFalse(): void
-    {
-        $this->assertFalse(
-            Timer::exists('test')
-        );
+        $this->assertSame($timers, Timer::all());
     }
 
     protected function setUp(): void
