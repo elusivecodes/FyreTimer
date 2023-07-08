@@ -1,6 +1,6 @@
 # FyreTimer
 
-**FyreTimer** is a free, timer library for *PHP*.
+**FyreTimer** is a free, open-source timer library for *PHP*.
 
 
 ## Table Of Contents
