@@ -92,11 +92,11 @@ class Timer
     }
 
     /**
-     * Delete a timer.
+     * Remove a timer.
      * @param string $name The timer name.
-     * @return bool TRUE if the timer was deleted, otherwise FALSE.
+     * @return bool TRUE if the timer was removed, otherwise FALSE.
      */
-    public static function delete(string $name): bool
+    public static function remove(string $name): bool
     {
 		if (!static::has($name)) {
             return false;

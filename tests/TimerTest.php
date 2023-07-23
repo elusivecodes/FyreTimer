@@ -20,19 +20,6 @@ final class TimerTest extends TestCase
         $this->assertSame(2, Timer::count());
     }
 
-    public function testDelete(): void
-    {
-        Timer::start('test');
-
-        $this->assertTrue(Timer::delete('test'));
-        $this->assertFalse(Timer::has('test'));
-    }
-
-    public function testDeleteInvalid(): void
-    {
-        $this->assertFalse(Timer::delete('test'));
-    }
-
     public function testElapsed(): void
     {
         Timer::start('test');
@@ -105,6 +92,19 @@ final class TimerTest extends TestCase
         $this->expectException(TimerException::class);
 
         Timer::isStopped('test');
+    }
+
+    public function testRemove(): void
+    {
+        Timer::start('test');
+
+        $this->assertTrue(Timer::remove('test'));
+        $this->assertFalse(Timer::has('test'));
+    }
+
+    public function testRemoveInvalid(): void
+    {
+        $this->assertFalse(Timer::remove('test'));
     }
 
     public function testStart(): void

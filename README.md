@@ -50,16 +50,6 @@ Get the number of timers.
 $timerCount = Timer::count();
 ```
 
-**Delete**
-
-Delete a timer.
-
-- `$name` is a string representing the timer name.
-
-```php
-$deleted = Timer::delete($name);
-```
-
 **Elapsed**
 
 Get the elapsed time for a timer.
@@ -98,6 +88,16 @@ Determine whether a timer is stopped.
 
 ```php
 $isStopped = Timer::isStopped($name);
+```
+
+**Remove**
+
+Remove a timer.
+
+- `$name` is a string representing the timer name.
+
+```php
+$removed = Timer::remove($name);
 ```
 
 **Start**
