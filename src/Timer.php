@@ -12,7 +12,7 @@ use function hrtime;
 /**
  * Timer
  */
-class Timer
+abstract class Timer
 {
 
     protected static array $timers = [];
