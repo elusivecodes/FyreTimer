@@ -11,6 +11,10 @@ use function usleep;
 
 final class TimerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Timer::clear();
+    }
 
     public function testCount(): void
     {
@@ -60,24 +64,16 @@ final class TimerTest extends TestCase
         $this->assertNull(Timer::get('test'));
     }
 
-    public function testHasTrue(): void
-    {
-        Timer::start('test');
-
-        $this->assertTrue(Timer::has('test'));
-    }
-
     public function testHasFalse(): void
     {
         $this->assertFalse(Timer::has('test'));
     }
 
-    public function testIsStoppedTrue(): void
+    public function testHasTrue(): void
     {
         Timer::start('test');
-        Timer::stop('test');
 
-        $this->assertTrue(Timer::isStopped('test'));
+        $this->assertTrue(Timer::has('test'));
     }
 
     public function testIsStoppedFalse(): void
@@ -92,6 +88,14 @@ final class TimerTest extends TestCase
         $this->expectException(TimerException::class);
 
         Timer::isStopped('test');
+    }
+
+    public function testIsStoppedTrue(): void
+    {
+        Timer::start('test');
+        Timer::stop('test');
+
+        $this->assertTrue(Timer::isStopped('test'));
     }
 
     public function testRemove(): void
@@ -137,22 +141,6 @@ final class TimerTest extends TestCase
         $this->assertIsFloat($timer['duration']);
     }
 
-    public function testStopMultiple(): void
-    {
-        $this->expectException(TimerException::class);
-
-        Timer::start('test');
-        Timer::stop('test');
-        Timer::stop('test');
-    }
-
-    public function testStopInvalid(): void
-    {
-        $this->expectException(TimerException::class);
-
-        Timer::stop('test');
-    }
-
     public function testStopAll(): void
     {
         Timer::start('test1');
@@ -183,9 +171,19 @@ final class TimerTest extends TestCase
         $this->assertSame($timers, Timer::all());
     }
 
-    protected function setUp(): void
+    public function testStopInvalid(): void
     {
-        Timer::clear();
+        $this->expectException(TimerException::class);
+
+        Timer::stop('test');
     }
 
+    public function testStopMultiple(): void
+    {
+        $this->expectException(TimerException::class);
+
+        Timer::start('test');
+        Timer::stop('test');
+        Timer::stop('test');
+    }
 }

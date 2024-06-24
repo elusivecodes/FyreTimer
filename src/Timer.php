@@ -14,7 +14,6 @@ use function hrtime;
  */
 abstract class Timer
 {
-
     protected static array $timers = [];
 
     /**
@@ -51,9 +50,9 @@ abstract class Timer
      */
     public static function elapsed(string $name): float
     {
-		if (!static::has($name)) {
+        if (!static::has($name)) {
             throw TimerException::forInvalidTimer($name);
-		}
+        }
 
         return hrtime(true) - static::$timers[$name]['start'];
     }
@@ -86,7 +85,7 @@ abstract class Timer
      */
     public static function isStopped(string $name): bool
     {
-		if (!static::has($name)) {
+        if (!static::has($name)) {
             throw TimerException::forInvalidTimer($name);
         }
 
@@ -100,7 +99,7 @@ abstract class Timer
      */
     public static function remove(string $name): bool
     {
-		if (!static::has($name)) {
+        if (!static::has($name)) {
             return false;
         }
 
@@ -116,7 +115,7 @@ abstract class Timer
      */
     public static function start(string $name): void
     {
-		if (static::has($name)) {
+        if (static::has($name)) {
             throw TimerException::forTimerAlreadyStarted($name);
         }
 
@@ -140,7 +139,7 @@ abstract class Timer
 
         $timer = static::$timers[$name];
 
-		$timer['end'] = hrtime(true) / 1000;
+        $timer['end'] = hrtime(true) / 1000;
         $timer['duration'] = $timer['end'] - $timer['start'];
 
         static::$timers[$name] = $timer;
@@ -151,7 +150,7 @@ abstract class Timer
      */
     public static function stopAll(): void
     {
-        foreach (static::$timers AS $name => $timer) {
+        foreach (static::$timers as $name => $timer) {
             if ($timer['end'] !== null) {
                 continue;
             }
@@ -162,5 +161,4 @@ abstract class Timer
             static::$timers[$name] = $timer;
         }
     }
-
 }
