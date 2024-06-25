@@ -18,6 +18,7 @@ abstract class Timer
 
     /**
      * Get all timers.
+     *
      * @return array The timers.
      */
     public static function all(): array
@@ -35,6 +36,7 @@ abstract class Timer
 
     /**
      * Get the number of timers.
+     *
      * @return int The number of timers.
      */
     public static function count(): int
@@ -44,8 +46,10 @@ abstract class Timer
 
     /**
      * Get the elapsed time for a timer.
+     *
      * @param string $name The timer name.
      * @return float The elapsed time.
+     *
      * @throws TimerException if the timer is not valid.
      */
     public static function elapsed(string $name): float
@@ -59,6 +63,7 @@ abstract class Timer
 
     /**
      * Get a timer.
+     *
      * @param string $name The timer name.
      * @return array|null The timer data.
      */
@@ -69,6 +74,7 @@ abstract class Timer
 
     /**
      * Determine whether a timer exists.
+     *
      * @param string $name The timer name.
      * @return bool TRUE if the timer exists, otherwise FALSE.
      */
@@ -79,8 +85,10 @@ abstract class Timer
 
     /**
      * Determine whether a timer is stopped.
+     *
      * @param string $name The timer name.
      * @return bool TRUE if the timer is stopped, otherwise FALSE.
+     *
      * @throws TimerException if the timer is not valid.
      */
     public static function isStopped(string $name): bool
@@ -94,6 +102,7 @@ abstract class Timer
 
     /**
      * Remove a timer.
+     *
      * @param string $name The timer name.
      * @return bool TRUE if the timer was removed, otherwise FALSE.
      */
@@ -110,7 +119,9 @@ abstract class Timer
 
     /**
      * Start a timer.
+     *
      * @param string $name The timer name.
+     *
      * @throws TimerException if the timer is already started.
      */
     public static function start(string $name): void
@@ -122,13 +133,15 @@ abstract class Timer
         static::$timers[$name] = [
             'start' => hrtime(true) / 1000,
             'end' => null,
-            'duration' => null
+            'duration' => null,
         ];
     }
 
     /**
      * Stop a timer.
+     *
      * @param string $name The timer name.
+     *
      * @throws TimerException if the timer is already stopped.
      */
     public static function stop(string $name): void

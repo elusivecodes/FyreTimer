@@ -11,11 +11,6 @@ use function usleep;
 
 final class TimerTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        Timer::clear();
-    }
-
     public function testCount(): void
     {
         Timer::start('test1');
@@ -185,5 +180,10 @@ final class TimerTest extends TestCase
         Timer::start('test');
         Timer::stop('test');
         Timer::stop('test');
+    }
+
+    protected function setUp(): void
+    {
+        Timer::clear();
     }
 }
