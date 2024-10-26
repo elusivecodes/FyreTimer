@@ -31,7 +31,7 @@ use Fyre\Utility\Timer;
 Get all timers.
 
 ```php
-$timers = Timer::all();
+$timers = $timer->all();
 ```
 
 **Clear**
@@ -39,7 +39,7 @@ $timers = Timer::all();
 Clear all timers.
 
 ```php
-Timer::clear();
+$timer->clear();
 ```
 
 **Count**
@@ -47,7 +47,7 @@ Timer::clear();
 Get the number of timers.
 
 ```php
-$timerCount = Timer::count();
+$count = $timer->count();
 ```
 
 **Elapsed**
@@ -57,7 +57,7 @@ Get the elapsed time for a timer.
 - `$name` is a string representing the timer name.
 
 ```php
-$elapsed = Timer::elapsed($name);
+$elapsed = $timer->elapsed($name);
 ```
 
 **Get**
@@ -67,7 +67,7 @@ Get a timer.
 - `$name` is a string representing the timer name.
 
 ```php
-$timer = Timer::get($name);
+$data = $timer->get($name);
 ```
 
 **Has**
@@ -77,7 +77,7 @@ Check if a timer exists.
 - `$name` is a string representing the timer name.
 
 ```php
-$hasTimer = Timer::has($name);
+$hasTimer = $timer->has($name);
 ```
 
 **Is Stopped**
@@ -87,7 +87,7 @@ Determine whether a timer is stopped.
 - `$name` is a string representing the timer name.
 
 ```php
-$isStopped = Timer::isStopped($name);
+$isStopped = $timer->isStopped($name);
 ```
 
 **Remove**
@@ -97,7 +97,7 @@ Remove a timer.
 - `$name` is a string representing the timer name.
 
 ```php
-$removed = Timer::remove($name);
+$timer->remove($name);
 ```
 
 **Start**
@@ -107,7 +107,7 @@ Start a timer.
 - `$name` is a string representing the timer name.
 
 ```php
-Timer::start($name);
+$timer->start($name);
 ```
 
 **Stop**
@@ -117,7 +117,7 @@ Stop a timer.
 - `$name` is a string representing the timer name.
 
 ```php
-Timer::stop($name);
+$timer->stop($name);
 ```
 
 **Stop All**
@@ -125,5 +125,5 @@ Timer::stop($name);
 Stop all timers.
 
 ```php
-Timer::stopAll();
+$timer->stopAll();
 ```

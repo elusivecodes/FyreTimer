@@ -11,40 +11,40 @@ use function usleep;
 
 final class TimerTest extends TestCase
 {
+    protected Timer $timer;
+
     public function testCount(): void
     {
-        Timer::start('test1');
-        Timer::start('test2');
+        $this->timer->start('test1');
+        $this->timer->start('test2');
 
-        $this->assertSame(2, Timer::count());
+        $this->assertSame(2, $this->timer->count());
     }
 
     public function testElapsed(): void
     {
-        Timer::start('test');
+        $this->timer->start('test');
         usleep(500000);
-        $elapsed1 = Timer::elapsed('test');
+        $elapsed1 = $this->timer->elapsed('test');
         usleep(500000);
-        $elapsed2 = Timer::elapsed('test');
+        $elapsed2 = $this->timer->elapsed('test');
 
-        $this->assertIsFloat($elapsed1);
-        $this->assertIsFloat($elapsed2);
         $this->assertGreaterThan($elapsed1, $elapsed2);
-        $this->assertFalse(Timer::isStopped('test'));
+        $this->assertFalse($this->timer->isStopped('test'));
     }
 
     public function testElapsedInvalid(): void
     {
         $this->expectException(TimerException::class);
 
-        Timer::elapsed('test');
+        $this->timer->elapsed('test');
     }
 
     public function testGet(): void
     {
-        Timer::start('test');
+        $this->timer->start('test');
 
-        $timer = Timer::get('test');
+        $timer = $this->timer->get('test');
 
         $this->assertArrayHasKey('start', $timer);
         $this->assertArrayHasKey('end', $timer);
@@ -56,77 +56,88 @@ final class TimerTest extends TestCase
 
     public function testGetInvalid(): void
     {
-        $this->assertNull(Timer::get('test'));
+        $this->assertNull($this->timer->get('test'));
     }
 
     public function testHasFalse(): void
     {
-        $this->assertFalse(Timer::has('test'));
+        $this->assertFalse($this->timer->has('test'));
     }
 
     public function testHasTrue(): void
     {
-        Timer::start('test');
+        $this->timer->start('test');
 
-        $this->assertTrue(Timer::has('test'));
+        $this->assertTrue($this->timer->has('test'));
     }
 
     public function testIsStoppedFalse(): void
     {
-        Timer::start('test');
+        $this->timer->start('test');
 
-        $this->assertFalse(Timer::isStopped('test'));
+        $this->assertFalse($this->timer->isStopped('test'));
     }
 
     public function testIsStoppedInvalid(): void
     {
         $this->expectException(TimerException::class);
 
-        Timer::isStopped('test');
+        $this->timer->isStopped('test');
     }
 
     public function testIsStoppedTrue(): void
     {
-        Timer::start('test');
-        Timer::stop('test');
+        $this->timer->start('test');
+        $this->timer->stop('test');
 
-        $this->assertTrue(Timer::isStopped('test'));
+        $this->assertTrue($this->timer->isStopped('test'));
     }
 
     public function testRemove(): void
     {
-        Timer::start('test');
+        $this->timer->start('test');
 
-        $this->assertTrue(Timer::remove('test'));
-        $this->assertFalse(Timer::has('test'));
+        $this->assertSame(
+            $this->timer,
+            $this->timer->remove('test')
+        );
+
+        $this->assertFalse($this->timer->has('test'));
     }
 
     public function testRemoveInvalid(): void
     {
-        $this->assertFalse(Timer::remove('test'));
+        $this->expectException(TimerException::class);
+
+        $this->timer->remove('test');
     }
 
     public function testStart(): void
     {
-        $this->expectNotToPerformAssertions();
-
-        Timer::start('test');
+        $this->assertSame(
+            $this->timer,
+            $this->timer->start('test')
+        );
     }
 
     public function testStartMultiple(): void
     {
         $this->expectException(TimerException::class);
 
-        Timer::start('test');
-        Timer::start('test');
+        $this->timer->start('test');
+        $this->timer->start('test');
     }
 
     public function testStop(): void
     {
-        Timer::start('test');
-        Timer::stop('test');
+        $this->timer->start('test');
 
-        $timer = Timer::get('test');
+        $this->assertSame(
+            $this->timer,
+            $this->timer->stop('test')
+        );
+
+        $timer = $this->timer->get('test');
 
         $this->assertArrayHasKey('start', $timer);
         $this->assertArrayHasKey('end', $timer);
@@ -138,52 +149,55 @@ final class TimerTest extends TestCase
 
     public function testStopAll(): void
     {
-        Timer::start('test1');
-        Timer::start('test2');
-        Timer::stopAll();
+        $this->timer->start('test1');
+        $this->timer->start('test2');
 
-        $timers = Timer::all();
+        $this->assertSame(
+            $this->timer,
+            $this->timer->stopAll()
+        );
 
-        $this->assertIsArray($timers);
+        $timers = $this->timer->all();
+
         $this->assertCount(2, $timers);
         $this->assertArrayHasKey('test1', $timers);
         $this->assertArrayHasKey('test2', $timers);
-        $this->assertSame(Timer::get('test1'), $timers['test1']);
-        $this->assertSame(Timer::get('test2'), $timers['test2']);
+        $this->assertSame($this->timer->get('test1'), $timers['test1']);
+        $this->assertSame($this->timer->get('test2'), $timers['test2']);
     }
 
     public function testStopAllMultiple(): void
     {
-        Timer::start('test1');
-        Timer::start('test2');
-        Timer::stopAll();
+        $this->timer->start('test1');
+        $this->timer->start('test2');
+        $this->timer->stopAll();
 
-        $timers = Timer::all();
+        $timers = $this->timer->all();
 
         usleep(500000);
-        Timer::stopAll();
+        $this->timer->stopAll();
 
-        $this->assertSame($timers, Timer::all());
+        $this->assertSame($timers, $this->timer->all());
     }
 
     public function testStopInvalid(): void
     {
         $this->expectException(TimerException::class);
 
-        Timer::stop('test');
+        $this->timer->stop('test');
     }
 
     public function testStopMultiple(): void
     {
         $this->expectException(TimerException::class);
 
-        Timer::start('test');
-        Timer::stop('test');
-        Timer::stop('test');
+        $this->timer->start('test');
+        $this->timer->stop('test');
+        $this->timer->stop('test');
     }
 
     protected function setUp(): void
     {
-        Timer::clear();
+        $this->timer = new Timer();
     }
 }

@@ -12,26 +12,26 @@ use function hrtime;
 /**
  * Timer
  */
-abstract class Timer
+class Timer
 {
-    protected static array $timers = [];
+    protected array $timers = [];
 
     /**
      * Get all timers.
      *
      * @return array The timers.
      */
-    public static function all(): array
+    public function all(): array
     {
-        return static::$timers;
+        return $this->timers;
     }
 
     /**
      * Clear all timers.
      */
-    public static function clear(): void
+    public function clear(): void
     {
-        static::$timers = [];
+        $this->timers = [];
     }
 
     /**
@@ -39,9 +39,9 @@ abstract class Timer
      *
      * @return int The number of timers.
      */
-    public static function count(): int
+    public function count(): int
     {
-        return count(static::$timers);
+        return count($this->timers);
     }
 
     /**
@@ -52,13 +52,13 @@ abstract class Timer
      *
      * @throws TimerException if the timer is not valid.
      */
-    public static function elapsed(string $name): float
+    public function elapsed(string $name): float
     {
-        if (!static::has($name)) {
+        if (!array_key_exists($name, $this->timers)) {
             throw TimerException::forInvalidTimer($name);
         }
 
-        return hrtime(true) - static::$timers[$name]['start'];
+        return hrtime(true) - $this->timers[$name]['start'];
     }
 
     /**
@@ -67,9 +67,9 @@ abstract class Timer
      * @param string $name The timer name.
      * @return array|null The timer data.
      */
-    public static function get(string $name): array|null
+    public function get(string $name): array|null
     {
-        return static::$timers[$name] ?? null;
+        return $this->timers[$name] ?? null;
     }
 
     /**
@@ -78,9 +78,9 @@ abstract class Timer
      * @param string $name The timer name.
      * @return bool TRUE if the timer exists, otherwise FALSE.
      */
-    public static function has(string $name): bool
+    public function has(string $name): bool
     {
-        return array_key_exists($name, static::$timers);
+        return array_key_exists($name, $this->timers);
     }
 
     /**
@@ -91,79 +91,93 @@ abstract class Timer
      *
      * @throws TimerException if the timer is not valid.
      */
-    public static function isStopped(string $name): bool
+    public function isStopped(string $name): bool
     {
-        if (!static::has($name)) {
+        if (!array_key_exists($name, $this->timers)) {
             throw TimerException::forInvalidTimer($name);
         }
 
-        return static::$timers[$name]['end'] !== null;
+        return $this->timers[$name]['end'] !== null;
     }
 
     /**
      * Remove a timer.
      *
      * @param string $name The timer name.
-     * @return bool TRUE if the timer was removed, otherwise FALSE.
+     * @return static The Timer.
+     *
+     * @throws TimerException if the timer is already stopped.
      */
-    public static function remove(string $name): bool
+    public function remove(string $name): static
     {
-        if (!static::has($name)) {
-            return false;
+        if (!array_key_exists($name, $this->timers)) {
+            throw TimerException::forInvalidTimer($name);
         }
 
-        unset(static::$timers[$name]);
+        unset($this->timers[$name]);
 
-        return true;
+        return $this;
     }
 
     /**
      * Start a timer.
      *
      * @param string $name The timer name.
+     * @return static The Timer.
      *
      * @throws TimerException if the timer is already started.
      */
-    public static function start(string $name): void
+    public function start(string $name): static
     {
-        if (static::has($name)) {
+        if (array_key_exists($name, $this->timers)) {
             throw TimerException::forTimerAlreadyStarted($name);
         }
 
-        static::$timers[$name] = [
+        $this->timers[$name] = [
             'start' => hrtime(true) / 1000,
             'end' => null,
             'duration' => null,
         ];
+
+        return $this;
     }
 
     /**
      * Stop a timer.
      *
      * @param string $name The timer name.
+     * @return static The Timer.
      *
      * @throws TimerException if the timer is already stopped.
      */
-    public static function stop(string $name): void
+    public function stop(string $name): static
     {
-        if (static::isStopped($name)) {
+        if (!array_key_exists($name, $this->timers)) {
+            throw TimerException::forInvalidTimer($name);
+        }
+
+        if ($this->timers[$name]['end'] !== null) {
             throw TimerException::forTimerAlreadyStopped($name);
         }
 
-        $timer = static::$timers[$name];
+        $timer = $this->timers[$name];
 
         $timer['end'] = hrtime(true) / 1000;
         $timer['duration'] = $timer['end'] - $timer['start'];
 
-        static::$timers[$name] = $timer;
+        $this->timers[$name] = $timer;
+
+        return $this;
     }
 
     /**
      * Stop all timers.
+     *
+     * @return static The Timer.
      */
-    public static function stopAll(): void
+    public function stopAll(): static
     {
-        foreach (static::$timers as $name => $timer) {
+        foreach ($this->timers as $name => $timer) {
             if ($timer['end'] !== null) {
                 continue;
             }
@@ -171,7 +185,9 @@ abstract class Timer
             $timer['end'] = hrtime(true) / 1000;
             $timer['duration'] = $timer['end'] - $timer['start'];
 
-            static::$timers[$name] = $timer;
+            $this->timers[$name] = $timer;
         }
+
+        return $this;
     }
 }
