@@ -5,8 +5,8 @@
 
 ## Table Of Contents
 - [Installation](#installation)
-- [Timer Creation](#timer-creation)
-- [Timer Methods](#timer-methods)
+- [Basic Usage](#basic-usage)
+- [Methods](#methods)
 
 
 
@@ -25,14 +25,14 @@ use Fyre\Utility\Timer;
 ```
 
 
-## Timer Creation
+## Basic Usage
 
 ```php
 $timer = new Timer();
 ```
 
 
-## Timer Methods
+## Methods
 
 **All**
 
