@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\Utility;
 
 use Fyre\Utility\Exceptions\TimerException;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_key_exists;
 use function count;
@@ -14,6 +15,8 @@ use function hrtime;
  */
 class Timer
 {
+    use MacroTrait;
+
     protected array $timers = [];
 
     /**

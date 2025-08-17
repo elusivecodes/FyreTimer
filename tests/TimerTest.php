@@ -5,8 +5,10 @@ namespace Tests;
 
 use Fyre\Utility\Exceptions\TimerException;
 use Fyre\Utility\Timer;
+use Fyre\Utility\Traits\MacroTrait;
 use PHPUnit\Framework\TestCase;
 
+use function class_uses;
 use function usleep;
 
 final class TimerTest extends TestCase
@@ -91,6 +93,14 @@ final class TimerTest extends TestCase
         $this->timer->stop('test');
 
         $this->assertTrue($this->timer->isStopped('test'));
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(Timer::class)
+        );
     }
 
     public function testRemove(): void
